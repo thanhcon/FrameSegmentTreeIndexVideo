@@ -127,6 +127,30 @@ public class FsTree {
         newnode.setUB(right.getUB());
         return newnode;
     }
+    public void searchDoiTuong1(int start, int end, ArrayList<DoiTuong> ldt, Node node)
+    {
+        if(node == null)
+            return;
+        if(start >= node.getLB() && end <= node.getUB())
+        {
+            for(DoiTuong t: node.getArrObject())
+            {
+                // Can kiem tra xem doi tuong da ton tai trong ldt chua, neu ton tai
+                //roi thi khong them doi tuong nay vao ldt nua
+                ldt.add(t);
+            }
+        }
+        searchDoiTuong1(start, end, ldt, node.getNleft());
+        searchDoiTuong1(start, end, ldt, node.getNright());
+    }
+    //Lay toan bo doi tuong xuat hien trong toan bo khung hinh
+    //tu [start, end)
+    public ArrayList forallDoiTuong(int start, int end)
+    {
+        ArrayList<DoiTuong> ldt = new ArrayList<>();
+        searchDoiTuong1(start, end, ldt, root);
+        return null;
+    }
     public static void main(String[] args) {
         FsTree f = new FsTree();
         ArrayList<Integer> lsm = new ArrayList<Integer>();
