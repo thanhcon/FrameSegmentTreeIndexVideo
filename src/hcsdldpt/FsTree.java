@@ -39,21 +39,16 @@ public class FsTree {
     
     public void loadObject(){
          String sql = " Select *from Bang ";
-         
-         
         try {
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
            
         } catch (SQLException ex) {
             Logger.getLogger(FsTree.class.getName()).log(Level.SEVERE, null, ex);
-        }
-         
-         
-                  
-        
+        }   
     }
-    public void loadObject(int startframe,int endframe, Node node, DoiTuong obj)
+    //Đặt đối tượng vào các nút nằm trên cây phân đoạn khung
+    public void loadObjectToFrameSegmentTree(int startframe,int endframe, Node node, DoiTuong obj)
     {
         if(node == null)
             return;
@@ -68,8 +63,8 @@ public class FsTree {
             return;
         }
         else{
-            loadObject(startframe, endframe, node.getNleft(), obj);
-            loadObject(startframe, endframe, node.getNright(), obj);
+            loadObjectToFrameSegmentTree(startframe, endframe, node.getNleft(), obj);
+            loadObjectToFrameSegmentTree(startframe, endframe, node.getNright(), obj);
         }
             
     }
@@ -149,7 +144,17 @@ public class FsTree {
     {
         ArrayList<DoiTuong> ldt = new ArrayList<>();
         searchDoiTuong1(start, end, ldt, root);
-        return null;
+        return ldt;
+    }
+    public ArrayList xuathien1Khunghinh(int start, int end)
+    {
+        ArrayList<DoiTuong> ldt = new ArrayList<>();
+        searchDoiTuong2(start, end, ldt, root);
+        //Mot so doi tuong co the xuat hien trong 2 khung hinh nhung van xuat hien trong
+        //ket qua, vi du xet khoang 50 - 100. Doi tuong a xuat hien chi trong frame 50
+        // và frame 100, thì kết quả ở list đối tượng sẽ có 2 bản ghi a
+        // bản ghi này xuất hiện cả 2 lần nên cần loại bản ghi a ra khỏi kết quả
+        return ldt;
     }
     public static void main(String[] args) {
         FsTree f = new FsTree();
@@ -175,8 +180,37 @@ public class FsTree {
         a.getlSegment().add(new Segment(1750, 2500));
         f.creatFsTree(lsm);
         f.indexFsTree(1, f.getRoot());
-        f.loadObject(250, 750, f.root, a);
-        f.loadObject(1750,2500 ,f.root, a);
+        f.loadObjectToFrameSegmentTree(250, 750, f.root, a);
+        f.loadObjectToFrameSegmentTree(1750,2500 ,f.root, a);
+    }
+    //Tìm kiếm các đối tượng chỉ xuất hiện trong 1 khung hình.
+    private void searchDoiTuong2(int start, int end, ArrayList<DoiTuong> ldt, Node node) {
+        if(end - start == 1)
+        {
+            for(DoiTuong t: node.getArrObject())
+            {
+                ldt.add(t);
+            }
+        }
+        if(node.getLB() <= start && node.getUB() >= end)
+        {
+            if(node.getNleft() == null || node.getNright() == null)
+            {
+                return;
+            }
+            if(node.getNleft().getUB() >= end)
+            {
+                searchDoiTuong2(start, end, ldt, node.getNleft());
+            }else if(node.getNright().getLB() <= start)
+            {
+                searchDoiTuong2(start, end, ldt, node.getNright());
+            }else
+            {
+                searchDoiTuong2(start, node.getNleft().getUB(), ldt, node.getNleft());
+                searchDoiTuong2(node.getNright().getLB(), end, ldt, node.getNright());
+            }
+        }
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     
