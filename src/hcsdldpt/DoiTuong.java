@@ -12,27 +12,56 @@ import java.util.ArrayList;
  * @author Admin
  */
 public class DoiTuong {
-    private int idObject ;
-     private ArrayList<Segment> lSegment = new ArrayList<>();
+    private String  nameObject ;
+    private int frameStart ;
+    private int frameEnd ;
+  private String linkVideo ;
 
     public DoiTuong() {
     }
 
-    public int getIdObject() {
-        return idObject;
+    public DoiTuong(String nameObject, int frameStart, int frameEnd, String linkVideo) {
+        this.nameObject = nameObject;
+        this.frameStart = frameStart;
+        this.frameEnd = frameEnd;
+        this.linkVideo = linkVideo;
     }
 
-    public void setIdObject(int idObject) {
-        this.idObject = idObject;
+    public String getNameObject() {
+        return nameObject;
     }
 
-    public ArrayList<Segment> getlSegment() {
-        return lSegment;
+    public void setNameObject(String nameObject) {
+        this.nameObject = nameObject;
     }
 
-    public void setlSegment(ArrayList<Segment> lSegment) {
-        this.lSegment = lSegment;
+    public int getFrameStart() {
+        return frameStart;
     }
+
+    public void setFrameStart(int frameStart) {
+        this.frameStart = frameStart;
+    }
+
+    public int getFrameEnd() {
+        return frameEnd;
+    }
+
+    public void setFrameEnd(int frameEnd) {
+        this.frameEnd = frameEnd;
+    }
+
+    public String getLinkVideo() {
+        return linkVideo;
+    }
+
+    public void setLinkVideo(String linkVideo) {
+        this.linkVideo = linkVideo;
+    }
+  
+   
+
+    
     
    
 }

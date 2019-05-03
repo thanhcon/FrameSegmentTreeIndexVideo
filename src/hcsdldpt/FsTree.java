@@ -26,7 +26,8 @@ public class FsTree {
     private String nameVideo ;
     private int index = 0;// chi den index cua day sap xep 
     private Connection con = new ConnectDB().getconnect();
-    private ArrayList<DoiTuong> ldt;
+    private ArrayList<DoiTuong> ldt; 
+    
 
     public Node getRoot() {
         return root;
@@ -47,7 +48,7 @@ public class FsTree {
             Logger.getLogger(FsTree.class.getName()).log(Level.SEVERE, null, ex);
         }   
     }
-    //Đặt đối tượng vào các nút nằm trên cây phân đoạn khung
+    //Đặt đối tượng vào các nút nằm trên cây phân đoạn khung 
     public void loadObjectToFrameSegmentTree(int startframe,int endframe, Node node, DoiTuong obj)
     {
         if(node == null)
@@ -81,7 +82,7 @@ public class FsTree {
         buidFsTree(sortedList);// day vao tap hop loai bo cai trung
         
     }
-    public void buidFsTree(ArrayList<Integer> list)
+    public void buidFsTree(ArrayList<Integer> list)// xay dung cay 
     {
         int maxlevel = (int) (Math.log(list.size())/Math.log(2));// lay ra cap cua node
         int level = 0;
@@ -176,12 +177,16 @@ public class FsTree {
         lsm.add(4500);
         lsm.add(5000);
         DoiTuong a = new DoiTuong();
-        a.getlSegment().add(new Segment(250, 750));
-        a.getlSegment().add(new Segment(1750, 2500));
+//        a.getlSegment().add(new Segment(250, 750));
+//        a.getlSegment().add(new Segment(1750, 2500));
+//        a.getlSegment().add(new Segment(2250,2500));// tao
         f.creatFsTree(lsm);
         f.indexFsTree(1, f.getRoot());
         f.loadObjectToFrameSegmentTree(250, 750, f.root, a);
         f.loadObjectToFrameSegmentTree(1750,2500 ,f.root, a);
+//         f.loadObjectToFrameSegmentTree(3500,3750 ,f.root, a);
+//        f.loadObjectToFrameSegmentTree(4500,5000 ,f.root, a);
+//                    f.loadObjectToFrameSegmentTree(3250,5000 ,f.root, a);
     }
     //Tìm kiếm các đối tượng chỉ xuất hiện trong 1 khung hình.
     private void searchDoiTuong2(int start, int end, ArrayList<DoiTuong> ldt, Node node) {
