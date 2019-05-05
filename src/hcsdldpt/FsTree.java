@@ -27,7 +27,26 @@ public class FsTree {
     private int index = 0;// chi den index cua day sap xep 
     private Connection con = new ConnectDB().getconnect();
     private ArrayList<DoiTuong> ldt;
-
+    private int numberframe;
+    public static int isPowerOf2(int n)
+    {
+        while(n != 1)
+        {
+            if(n % 2 == 1)
+                return 0;
+            n = n/2;
+        }
+        return 1;
+    }
+    public static int powerOf2AndGreaterThan(int n)
+    {
+        int i = 1;
+        while(i < n)
+        {
+            i = i * 2;
+        }
+        return i;
+    }
     public Node getRoot() {
         return root;
     }
@@ -71,6 +90,18 @@ public class FsTree {
     public void creatFsTree(ArrayList<Integer> lsm)// nhap vao  cac doan va loai bo phan tu trung sap xep tang dan 
     {
         HashSet<Integer> hs = new HashSet();// khoi tao   1 tap hop 
+        if(isPowerOf2(lsm.size()) != 0)
+        {
+            int tam = powerOf2AndGreaterThan(numberframe);
+            for(int i = lsm.size(); i <= tam; i ++)
+            {
+                lsm.add(lsm.get(i - 1) + 1);
+            }
+            if(lsm.get(tam - 1) < numberframe)
+            {
+                lsm.set(tam - 1, numberframe);
+            }
+        }
         for(int i = 0; i < lsm.size(); i ++)
         {
             hs.add(lsm.get(i));// them dan cac  phan tu vao tap hop 
