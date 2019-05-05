@@ -22,12 +22,34 @@ import java.util.logging.Logger;
  * @author Admin
  */
 public class FsTree {
-    private Node root ;
-    private String nameVideo ;
+
+    private Node root;
+    private String nameVideo;
     private int index = 0;// chi den index cua day sap xep 
     private Connection con = new ConnectDB().getconnect();
-    private ArrayList<DoiTuong> ldt; 
-    
+    private ArrayList<DoiTuong> ldt;
+
+    public ArrayList<DoiTuong> getDT() {
+
+        ArrayList<DoiTuong> list = new ArrayList<>();
+        String sql = "select *from objectframe ";
+        try {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                DoiTuong ob = new DoiTuong();
+                ob.setNameObject(rs.getString("nameObject"));
+                ob.setFrameStart(rs.getInt("frameStart"));
+                ob.setFrameEnd(rs.getInt("frameEnd"));
+                ob.setLinkVideo(rs.getString("idVideo"));
+                list.add(ob);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(FsTree.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
 
     public Node getRoot() {
         return root;
@@ -36,82 +58,84 @@ public class FsTree {
     public void setRoot(Node root) {
         this.root = root;
     }
-    
-    
-    public void loadObject(){
-         String sql = " Select *from Bang ";
+
+    public void loadObject() {
+        String sql = " Select *from Bang ";
         try {
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
-           
+
         } catch (SQLException ex) {
             Logger.getLogger(FsTree.class.getName()).log(Level.SEVERE, null, ex);
-        }   
+        }
     }
+
     //Đặt đối tượng vào các nút nằm trên cây phân đoạn khung 
-    public void loadObjectToFrameSegmentTree(int startframe,int endframe, Node node, DoiTuong obj)
-    {
-        if(node == null)
+    public void loadObjectToFrameSegmentTree(int startframe, int endframe, Node node, DoiTuong obj) {
+        if (node == null) {
             return;
-        if(node.getLB() >= endframe || startframe >= node.getUB())
-        return;
-        if(node.getLB() >= startframe && node.getUB() <= endframe)
-        {
+        }
+        if (node.getLB() >= endframe || startframe >= node.getUB()) {
+            return;
+        }
+        if (node.getLB() >= startframe && node.getUB() <= endframe) {
             node.getArrObject().add(obj);
             System.out.println("Node: " + node.getNodenum());
             System.out.println(node.getLB() + " " + node.getUB());
-            
+
             return;
-        }
-        else{
+        } else {
             loadObjectToFrameSegmentTree(startframe, endframe, node.getNleft(), obj);
             loadObjectToFrameSegmentTree(startframe, endframe, node.getNright(), obj);
         }
-            
+
     }
+
     public void creatFsTree(ArrayList<Integer> lsm)// nhap vao  cac doan va loai bo phan tu trung sap xep tang dan 
     {
         HashSet<Integer> hs = new HashSet();// khoi tao   1 tap hop 
-        for(int i = 0; i < lsm.size(); i ++)
-        {
+        for (int i = 0; i < lsm.size(); i++) {
             hs.add(lsm.get(i));// them dan cac  phan tu vao tap hop 
         }
         ArrayList<Integer> sortedList = new ArrayList<Integer>(hs);
         Collections.sort((List<Integer>) sortedList);
         //System.out.println(sortedList.size());
         buidFsTree(sortedList);// day vao tap hop loai bo cai trung
-        
+
     }
+
     public void buidFsTree(ArrayList<Integer> list)// xay dung cay 
     {
-        int maxlevel = (int) (Math.log(list.size())/Math.log(2));// lay ra cap cua node
+        int maxlevel = (int) (Math.log(list.size()) / Math.log(2));// lay ra cap cua node
         int level = 0;
         root = build(0, maxlevel, list);
-        
+
         //System.out.println("test");
     }
-    public void indexFsTree(int index, Node node)
-    {
-        if(node == null)
+
+    public void indexFsTree(int index, Node node) {
+        if (node == null) {
             return;
+        }
         node.setNodenum(index);
-        indexFsTree( index * 2, node.getNleft());
+        indexFsTree(index * 2, node.getNleft());
         indexFsTree(index * 2 + 1, node.getNright());
     }
+
     public Node build(int level, int maxlevel, ArrayList<Integer> list) // xay dung cay 
     {
-        if(level == maxlevel)
-        {
+        if (level == maxlevel) {
             //System.out.println("level:" + level);
             Node newnode = new Node();
             //System.out.println("index:" + index);
-            
-            newnode.setLB(list.get(index ++));// 
+
+            newnode.setLB(list.get(index++));// 
             //System.out.println("index:" + index);
-            if(index == list.size())
+            if (index == list.size()) {
                 newnode.setUB(list.get(index - 1));
-            else
-            newnode.setUB(list.get(index));  //set UB ben phai 
+            } else {
+                newnode.setUB(list.get(index));  //set UB ben phai 
+            }
             return newnode;  // tra ve nut 16 
         }
         Node newnode = new Node();
@@ -123,14 +147,13 @@ public class FsTree {
         newnode.setUB(right.getUB());
         return newnode;
     }
-    public void searchDoiTuong1(int start, int end, ArrayList<DoiTuong> ldt, Node node)
-    {
-        if(node == null)
+
+    public void searchDoiTuong1(int start, int end, ArrayList<DoiTuong> ldt, Node node) {
+        if (node == null) {
             return;
-        if(start >= node.getLB() && end <= node.getUB())
-        {
-            for(DoiTuong t: node.getArrObject())
-            {
+        }
+        if (start >= node.getLB() && end <= node.getUB()) {
+            for (DoiTuong t : node.getArrObject()) {
                 // Can kiem tra xem doi tuong da ton tai trong ldt chua, neu ton tai
                 //roi thi khong them doi tuong nay vao ldt nua
                 ldt.add(t);
@@ -139,16 +162,16 @@ public class FsTree {
         searchDoiTuong1(start, end, ldt, node.getNleft());
         searchDoiTuong1(start, end, ldt, node.getNright());
     }
+
     //Lay toan bo doi tuong xuat hien trong toan bo khung hinh
     //tu [start, end)
-    public ArrayList forallDoiTuong(int start, int end)
-    {
+    public ArrayList forallDoiTuong(int start, int end) {
         ArrayList<DoiTuong> ldt = new ArrayList<>();
         searchDoiTuong1(start, end, ldt, root);
         return ldt;
     }
-    public ArrayList xuathien1Khunghinh(int start, int end)
-    {
+
+    public ArrayList xuathien1Khunghinh(int start, int end) {
         ArrayList<DoiTuong> ldt = new ArrayList<>();
         searchDoiTuong2(start, end, ldt, root);
         //Mot so doi tuong co the xuat hien trong 2 khung hinh nhung van xuat hien trong
@@ -157,6 +180,7 @@ public class FsTree {
         // bản ghi này xuất hiện cả 2 lần nên cần loại bản ghi a ra khỏi kết quả
         return ldt;
     }
+
     public static void main(String[] args) {
         FsTree f = new FsTree();
         ArrayList<Integer> lsm = new ArrayList<Integer>();
@@ -183,40 +207,37 @@ public class FsTree {
         f.creatFsTree(lsm);
         f.indexFsTree(1, f.getRoot());
         f.loadObjectToFrameSegmentTree(250, 750, f.root, a);
-        f.loadObjectToFrameSegmentTree(1750,2500 ,f.root, a);
+        f.loadObjectToFrameSegmentTree(1750, 2500, f.root, a);
+        
+        ArrayList<DoiTuong> listt = new ArrayList<>();
+        listt = new FsTree().getDT();
+        System.out.println(listt.size());
 //         f.loadObjectToFrameSegmentTree(3500,3750 ,f.root, a);
 //        f.loadObjectToFrameSegmentTree(4500,5000 ,f.root, a);
 //                    f.loadObjectToFrameSegmentTree(3250,5000 ,f.root, a);
     }
+
     //Tìm kiếm các đối tượng chỉ xuất hiện trong 1 khung hình.
     private void searchDoiTuong2(int start, int end, ArrayList<DoiTuong> ldt, Node node) {
-        if(end - start == 1)
-        {
-            for(DoiTuong t: node.getArrObject())
-            {
+        if (end - start == 1) {
+            for (DoiTuong t : node.getArrObject()) {
                 ldt.add(t);
             }
         }
-        if(node.getLB() <= start && node.getUB() >= end)
-        {
-            if(node.getNleft() == null || node.getNright() == null)
-            {
+        if (node.getLB() <= start && node.getUB() >= end) {
+            if (node.getNleft() == null || node.getNright() == null) {
                 return;
             }
-            if(node.getNleft().getUB() >= end)
-            {
+            if (node.getNleft().getUB() >= end) {
                 searchDoiTuong2(start, end, ldt, node.getNleft());
-            }else if(node.getNright().getLB() <= start)
-            {
+            } else if (node.getNright().getLB() <= start) {
                 searchDoiTuong2(start, end, ldt, node.getNright());
-            }else
-            {
+            } else {
                 searchDoiTuong2(start, node.getNleft().getUB(), ldt, node.getNleft());
                 searchDoiTuong2(node.getNright().getLB(), end, ldt, node.getNright());
             }
         }
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
+
 }

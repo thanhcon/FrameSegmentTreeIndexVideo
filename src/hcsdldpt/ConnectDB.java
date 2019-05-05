@@ -19,7 +19,7 @@ public class ConnectDB {
      public Connection getconnect() {
         Connection con = null;
         String dbClass = "com.mysql.jdbc.Driver";
-        String dbUrl = "jdbc:mysql://localhost:3306/quanlybh?zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8";
+        String dbUrl = "jdbc:mysql://localhost:3306/dpt";
 
         try {
             Class.forName(dbClass);
@@ -34,6 +34,9 @@ public class ConnectDB {
         }
         return con;
 
+    }
+    public static void main(String[] args) {
+        new ConnectDB().getconnect();
     }
 
 }
